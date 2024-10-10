@@ -1,6 +1,6 @@
 <?php
-$nama = $_GET["nama"];
-$email = $_GET["email"];
+$nama = htmlspecialchars($_POST["nama"]);
+$email =htmlspecialchars($_POST["email"]);
 
 
 ?>
