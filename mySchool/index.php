@@ -1,16 +1,16 @@
 <?php 
 include "function.php";
 
-$query = "SELECT * FROM students";
-$result = mysqli_query($connection, $query);
+$students = query("SELECT classes.name AS class_name, majors.name AS major_name, students.* FROM students 
+    JOIN classes ON students.class_id = classes.id
+    JOIN majors ON students.major_id = majors.id");
 
-if (mysqli_num_rows($result) >0 ){
-    while ($row = mysqli_fetch_assoc($result)){
-      $students[] = $row;
-    }
+    $majors = query("SELECT * FROM majors");
+    $classes = query("SELECT * FROM classes");
 
+if(isset($_POST['submit'])){
+  $result = tambah ($_POST);
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -21,8 +21,15 @@ if (mysqli_num_rows($result) >0 ){
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+    <script>Swal.fire({
+  title: 'Error!',
+  text: 'Do you want to continue',
+  icon: 'error',
+  confirmButtonText: 'Cool'
+})</script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
     <!-- navbar -->
      
@@ -93,9 +100,74 @@ if (mysqli_num_rows($result) >0 ){
             <input type="text" id="table-search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search for items">
         </div>
         <div>
-            <button id="dropdownRadioButton" data-dropdown-toggle="dropdownRadio" class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" type="button">
-               Tambah Data
-            </button>
+<!-- Modal toggle -->
+<button data-modal-target="crud-modal" data-modal-toggle="crud-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+  Tambah Data 
+</button>
+
+<!-- Main modal -->
+<div id="crud-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Tambah Data Siswa
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="crud-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form class="p-4 md:p-5" action="" method="post">
+                <div class="grid gap-4 mb-4 grid-cols-3">
+                    <div class="col-span-1">
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NISN</label>
+                        <input type="text" name="nisn" id="nisn" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type your NISN" required="">
+                    </div>
+                    <div class="col-span-1">
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                        <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Fill your name here name" required="">
+                    </div>
+                    <div class="col-span-1 sm:col-span-1">
+                        <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Umur</label>
+                        <input type="number" min = 0 max=100 name="umur" id="umur" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Age" required="">
+                    </div>
+                    <div class="col-span-2 ">
+                        <label for="major" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jurusan</label>
+                        <select name="major"id="major" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                        <option selected disabled?>----Pilih Jurusan----</option>
+                        <?php foreach($majors as $major): ?>
+                                           <option value=<?= $major["id"] ?>"><?= $major["name"] ?></option>
+                                           <?php endforeach ?>
+                        </select>
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label for="class" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kelas</label>
+                        <select name="class" id="class" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                        <option selected disabled>--Pilih Kelas--</option>
+                        <?php foreach($classes as $class): ?>
+                                           <option value=<?= $class["id"] ?>"><?= $class["name"] ?></option>
+                                           <?php endforeach ?>          
+                        </select>
+                    </div>
+                    <div class="col-span-3">
+                        <label for="alamat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Alamat</label>
+                        <textarea name="alamat" id="alamat" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write product description here"></textarea>                    
+                    </div>
+                </div>
+                <button type="submit" name="submit" class="w-full justify-center text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                  Submit
+                </button>
+            </form>
+        </div>
+    </div>
+</div> 
+
            
         </div>
         
@@ -104,20 +176,27 @@ if (mysqli_num_rows($result) >0 ){
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
                 <th scope="col" class="px-6 py-3">
-                    Product name
+                    NISN
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Color
+                    Nama
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Category
+                    Umur
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Price
+                    Alamat
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Action
+                    Kelas
                 </th>
+                <th scope="col" class="px-6 py-3">
+                    Jurusan
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Aksi
+                </th>
+                
             </tr>
         </thead>
         <tbody>
@@ -136,6 +215,12 @@ if (mysqli_num_rows($result) >0 ){
                 </td>
                 <td class="px-6 py-4">
                 <?= $student["alamat"]?>
+                </td>
+                <td class="px-6 py-4">
+                <?= $student["major_name"]?>
+                </td>
+                <td class="px-6 py-4">
+                <?= $student["class_name"]?>
                 </td>
                 <td class="px-6 py-4">
                     <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
