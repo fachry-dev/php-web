@@ -8,9 +8,7 @@ $students = query("SELECT classes.name AS class_name, majors.name AS major_name,
     $majors = query("SELECT * FROM majors");
     $classes = query("SELECT * FROM classes");
 
-if(isset($_POST['submit'])){
-  $result = tambah ($_POST);
-}
+    
 ?>
 
 <!DOCTYPE html>
@@ -24,13 +22,42 @@ if(isset($_POST['submit'])){
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <script>Swal.fire({
-  title: 'Error!',
-  text: 'Do you want to continue',
-  icon: 'error',
-  confirmButtonText: 'Cool'
-})</script>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    <?php 
+    if(isset($_POST['submit'])){
+        $result = tambah ($_POST);
+    
+            if($result > 0) {
+                echo"<script>
+                Swal.fire({
+                title: 'Good job!',
+                text: 'Berhasil menambah Data!',
+                icon: 'success'
+                }).then ((result) =>{
+                    window.location.href = 'index.php';
+                });
+                </script>";
+                
+            }else if ($result == -1){
+                echo "<script>
+                Swal.fire({
+                title: 'Failed',
+                text: 'NISN sudah ada',
+                icon: 'error'
+                });
+                </script>";
+            } else  {
+                echo "<script>
+                Swal.fire({
+                title: 'Failed',
+                text: 'Gagal menambhakan data',
+                icon: 'error'
+                });
+                </script>";
+    
+            }
+        }
+        ?>
+    
     <!-- navbar -->
      
 
@@ -224,12 +251,13 @@ if(isset($_POST['submit'])){
                 </td>
                 <td class="px-6 py-4">
                     <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                    <a href="hapus.php?nisn=<?=$student['nisn'] ?>" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Hapus</a>
                 </td>
             </tr>
             <?php endforeach ?>
         </tbody>
     </table>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 </body>
 </html>
